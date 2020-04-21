@@ -71,7 +71,7 @@ any outputs.
 
 To use [Gazelle][gazelle] in your project to generate BUILD.bazel files for your .cue files, add gazelle to your WORKSPACE, and then add the following to your repository root BUILD.bazel:
 
-[gazelle] https://github.com/bazelbuild/bazel-gazelle
+[gazelle]: https://github.com/bazelbuild/bazel-gazelle
 
 ```py
 load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle_binary", "gazelle")
