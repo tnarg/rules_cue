@@ -66,3 +66,29 @@ any outputs.
 | `srcs`       | CUE files included in this library. Package name MUST match the directory name.                   |
 | `importpath` | The source import path of this library. Other .cue files can import this library using this path. |
 | `deps`       | Dependencies for the `srcs`. Each dependency is a `cue_library`                                   |
+
+## Gazelle Extension
+
+To use [Gazelle][gazelle] in your project to generate BUILD.bazel files for your .cue files, add gazelle to your WORKSPACE, and then add the following to your repository root BUILD.bazel:
+
+[gazelle] https://github.com/bazelbuild/bazel-gazelle
+
+```py
+load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle_binary", "gazelle")
+
+gazelle_binary(
+    name = "gazelle_binary",
+    languages = DEFAULT_LANGUAGES + ["@com_github_tnarg_rules_cue//gazelle/cue:go_default_library"],
+    msan = "off",
+    pure = "off",
+    race = "off",
+    static = "off",
+    visibility = ["//visibility:public"],
+)
+
+# gazelle:prefix github.com/example/project
+gazelle(
+    name = "gazelle",
+    gazelle = "//:gazelle_binary",
+)
+```
