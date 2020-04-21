@@ -1,0 +1,68 @@
+# CUE Rules for Bazel
+
+## Rules
+* [cue_binary](#cue_binary)
+* [cue_library](#cue_library)
+
+## Overview
+These build rules are used for building [CUE][cue] projects with Bazel.
+
+[cue]: https://cuelang.org/
+
+## Setup
+To use the CUE rules, add the following to your
+`WORKSPACE` file to add the external repositories for CUE, making sure to use the latest
+published versions:
+
+```py
+http_archive(
+    name = "com_github_tnarg_rules_cue",
+    # Make sure to check for the latest version when you install
+    url = "https://github.com/tnarg/rules_cue/archive/b49de6e8b29427e879dff9950ed04d0df2d49f25.zip",
+    strip_prefix = "rules_cue-b49de6e8b29427e879dff9950ed04d0df2d49f25",
+    sha256 = "dd3f3cd6c1d66cf77e20af60a4c309d34039c2727baeafbad72ddd13aec5414a",
+)
+
+load("@com_github_tnarg_rules_cue//cue:deps.bzl", "cue_rules_dependencies", "cue_register_toolchains")
+
+cue_rules_dependencies()
+
+cue_register_toolchains()
+```
+
+
+## Build Rule Reference
+
+<a name="reference-cue_binary"></a>
+### cue_binary
+
+```py
+cue_binary(name, src, deps=[], output_format=<format>", output_name=<src_filename.cue>)
+```
+
+Exports a single CUE entry-point file. The entry-point file may have
+dependencies (`cue_library` rules, see below).
+
+| Attribute       | Description                                                                   |
+|-----------------|-------------------------------------------------------------------------------|
+| `name`          | Unique name for this rule (required)                                          |
+| `src`           | Cue compilation entry-point (required).                                       |
+| `deps`          | List of dependencies for the `src`. Each dependency is a `cue_library`        |
+| `output_format` | It should be one of :value:`json` or :value:`yaml`.                           |
+| `output_name`   | Output file name, including extension. Defaults to `<src_name>.json`          |
+
+### cue_library
+
+```py
+cue_library(name, srcs, importpath, deps=[])
+```
+
+Defines a collection of Cue files that can be depended on by a `cue_binary`. Does not generate
+any outputs.
+
+| Attribute    | Description                                                                                       |
+|--------------|---------------------------------------------------------------------------------------------------|
+| `name`       | Unique name for this rule (required)                                                              |
+| `srcs`       | CUE files included in this library. Package name MUST match the directory name.                   |
+| `importpath` | The source import path of this library. Other .cue files can import this library using this path. |
+| `deps`       | Dependencies for the `srcs`. Each dependency is a `cue_library`                                   |
