@@ -17,8 +17,8 @@ GroupVersioner :: _
 // input the output they produce is exactly the same.
 Identifier :: string // enumIdentifier
 
-enumIdentifier ::
-	noopEncoderIdentifier
+//enumIdentifier ::
+//	noopEncoderIdentifier
 
 // Encoder writes objects to a serialized form
 Encoder :: _

@@ -14,14 +14,48 @@ def _collect_transitive_pkgs(pkg, deps):
         order = "postorder",
     )
 
+def _cue_def(ctx):
+    "Cue def library"
+    srcs_zip = _zip_src(ctx, ctx.files.srcs)
+    merged = _pkg_merge(ctx, srcs_zip)
+    def_out = ctx.actions.declare_file(ctx.label.name + "~def.json")
+
+    args = ctx.actions.args()
+    args.add(ctx.executable._cue.path)
+    args.add(merged.path)
+    args.add(def_out.path)
+
+    ctx.actions.run_shell(
+        mnemonic = "CueDef",
+        tools = [ctx.executable._cue],
+        arguments = [args],
+        command = """
+set -euo pipefail
+
+CUE=$1; shift
+PKGZIP=$1; shift
+OUT=$1; shift
+
+unzip -q ${PKGZIP}
+${CUE} def -o ${OUT}
+""",
+        inputs = [merged],
+        outputs = [def_out],
+        use_default_shell_env = True,
+    )
+
+    return def_out
+
 def _cue_library_impl(ctx):
-    """cue_library collects all transitive sources for given srcs and deps.
-    It doesn't execute any actions.
+    """cue_library validates a cue package, bundles up the files into a
+    zip, and collects all transitive dep zips.
     Args:
       ctx: The Bazel build context
     Returns:
       The cue_library rule.
     """
+
+    def_out = _cue_def(ctx)
 
     args = ctx.actions.args()
 
@@ -41,7 +75,7 @@ def _cue_library_impl(ctx):
     ctx.actions.run(
         mnemonic = "CuePkg",
         outputs = [pkg],
-        inputs = [manifest_file] + ctx.files.srcs,
+        inputs = [def_out, manifest_file] + ctx.files.srcs,
         executable = ctx.executable._cuepkg,
         arguments = [args],
     )
@@ -152,7 +186,7 @@ SRC=$1; shift
 OUT=$1; shift
 
 unzip -q ${PKGZIP}
-${CUE} export $@ ${SRC} > ${OUT}
+${CUE} export -o ${OUT} $@ ${SRC}
 """,
         inputs = [merged],
         outputs = [output],
@@ -187,6 +221,24 @@ _cue_library_attrs = {
     "importpath": attr.string(
         doc = "Cue import path under pkg/",
         mandatory = True,
+    ),
+    "_cue": attr.label(
+        default = Label("//cue:cue_runtime"),
+        executable = True,
+        allow_single_file = True,
+        cfg = "host",
+    ),
+    "_zipper": attr.label(
+        default = Label("@bazel_tools//tools/zip:zipper"),
+        executable = True,
+        allow_single_file = True,
+        cfg = "host",
+    ),
+    "_zipmerge": attr.label(
+        default = Label("@io_rsc_zipmerge//:zipmerge"),
+        executable = True,
+        allow_single_file = True,
+        cfg = "host",
     ),
     "_cuepkg": attr.label(
         default = Label("//cue/tools/cuepkg"),
