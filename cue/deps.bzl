@@ -6,7 +6,7 @@ _cue_runtimes = {
         {
             "os": "Linux",
             "arch": "x86_64",
-            "sha256": "4ad221fef79f915aa2a688b31f241c40882634f8ca8163af99d8252febce3d32",
+            "sha256": "6405bc947cdd5fbee6f6af4b440000503e548cb45a689c0cb72846bc7a694c9e",
         },
         {
             "os": "Darwin",
@@ -27,6 +27,7 @@ def cue_register_toolchains(version = "0.1.1"):
             name = "cue_runtime_%s_%s" % (platform["os"].lower(), platform["arch"]),
             build_file_content = """exports_files(["cue"], visibility = ["//visibility:public"])""",
             url = "https://github.com/cuelang/cue/releases/download/v%s/cue_%s_%s_%s.tar.gz" % (version, version, platform["os"], platform["arch"]),
+            sha256 = platform["sha256"],
         )
 
 def cue_rules_dependencies(version = "0.1.1"):
