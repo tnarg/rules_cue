@@ -61,19 +61,25 @@ def _cue_library_impl(ctx):
         ),
     ]
 
-def _zip_src(ctx):
+def _zip_src(ctx, srcs):
     # Generate a zip file containing the src file
+
+    zipper_list_content = "".join([src.basename + "=" + src.path + "\n" for src in srcs])
+    zipper_list = ctx.actions.declare_file(ctx.label.name + "~zipper.txt")
+    ctx.actions.write(zipper_list, zipper_list_content)
+
     src_zip = ctx.actions.declare_file(ctx.label.name + "~src.zip")
 
     args = ctx.actions.args()
+    args.add("c")
     args.add(src_zip.path)
-    args.add(ctx.file.src.path)
+    args.add("@" + zipper_list.path)
 
-    ctx.actions.run_shell(
-        mnemonic = "CueSrcZip",
+    ctx.actions.run(
+        mnemonic = "zipper",
+        executable = ctx.executable._zipper,
         arguments = [args],
-        command = "zip -o $1 $2",
-        inputs = [ctx.file.src],
+        inputs = [zipper_list] + srcs,
         outputs = [src_zip],
         use_default_shell_env = True,
     )
@@ -114,7 +120,7 @@ def _cue_export(ctx, merged, output):
 
     args.add(ctx.executable._cue.path)
     args.add(merged.path)
-    args.add(ctx.file.src.path)
+    args.add(ctx.file.src.basename)
     args.add(output.path)
 
     if ctx.attr.escape:
@@ -154,7 +160,7 @@ ${CUE} export $@ ${SRC} > ${OUT}
     )
 
 def _cue_binary_impl(ctx):
-    src_zip = _zip_src(ctx)
+    src_zip = _zip_src(ctx, [ctx.file.src])
     merged = _pkg_merge(ctx, src_zip)
     _cue_export(ctx, merged, ctx.outputs.export)
     return DefaultInfo(
@@ -253,6 +259,12 @@ the input name, so use this attribute with caution.""",
     "deps": _cue_deps_attr,
     "_cue": attr.label(
         default = Label("//cue:cue_runtime"),
+        executable = True,
+        allow_single_file = True,
+        cfg = "host",
+    ),
+    "_zipper": attr.label(
+        default = Label("@bazel_tools//tools/zip:zipper"),
         executable = True,
         allow_single_file = True,
         cfg = "host",
