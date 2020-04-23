@@ -53,6 +53,21 @@ func (cl *cueLang) Kinds() map[string]rule.KindInfo {
 			},
 			ResolveAttrs: map[string]bool{"deps": true},
 		},
+		"cue_repository": {
+			MatchAttrs: []string{"importpath"},
+			NonEmptyAttrs: map[string]bool{
+				"importpath": true,
+				"sha256":     true,
+				"urls":       true,
+			},
+			MergeableAttrs: map[string]bool{
+				"importpath":   true,
+				"sha256":       true,
+				"strip_prefix": true,
+				"type":         true,
+				"urls":         true,
+			},
+		},
 	}
 }
 
@@ -62,8 +77,23 @@ func (cl *cueLang) Kinds() map[string]rule.KindInfo {
 func (cl *cueLang) Loads() []rule.LoadInfo {
 	return []rule.LoadInfo{
 		{
-			Name:    "@com_github_tnarg_rules_cue//cue:cue.bzl",
-			Symbols: []string{"cue_export", "cue_library"},
+			Name: "@com_github_tnarg_rules_cue//cue:deps.bzl",
+			Symbols: []string{
+				"cue_register_toolchains",
+			},
+			After: []string{
+				"gazelle_dependencies",
+			},
+		}, {
+			Name: "@com_github_tnarg_rules_cue//cue:cue.bzl",
+			Symbols: []string{
+				"cue_export",
+				"cue_library",
+				"cue_repository",
+			},
+			After: []string{
+				"cue_register_toolchains",
+			},
 		},
 	}
 }

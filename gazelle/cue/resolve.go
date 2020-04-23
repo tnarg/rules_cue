@@ -1,11 +1,15 @@
 package cuelang
 
 import (
+	"fmt"
 	"log"
+	"path"
 	"sort"
+	"strings"
 
 	"github.com/bazelbuild/bazel-gazelle/config"
 	"github.com/bazelbuild/bazel-gazelle/label"
+	"github.com/bazelbuild/bazel-gazelle/pathtools"
 	"github.com/bazelbuild/bazel-gazelle/repo"
 	"github.com/bazelbuild/bazel-gazelle/resolve"
 	"github.com/bazelbuild/bazel-gazelle/rule"
@@ -63,12 +67,33 @@ func (cl *cueLang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Rem
 				Lang: cueName,
 				Imp:  imp,
 			}, cueName)
-		if res == nil {
-			log.Print("import error: from=%q, import=%q", from.String(), imp)
-		}
-		for _, entry := range res {
-			l := entry.Label.Rel(from.Repo, from.Pkg)
-			depSet[l.String()] = true
+		if len(res) > 0 {
+			for _, entry := range res {
+				l := entry.Label.Rel(from.Repo, from.Pkg)
+				depSet[l.String()] = true
+			}
+		} else {
+			prefix, repo, err := rc.Root(imp)
+			if err != nil {
+				log.Printf("error resolving %q: %+v", imp, err)
+			} else {
+				var pkg string
+				if pathtools.HasPrefix(imp, prefix) {
+					pkg = pathtools.TrimPrefix(imp, prefix)
+				}
+				if pkg != "" {
+					base := path.Base(pkg)
+					baseParts := strings.SplitN(base, ":", 2)
+					var cuePkg string
+					if len(baseParts) > 1 {
+						cuePkg = baseParts[1]
+					} else {
+						cuePkg = base
+					}
+					l := label.New(repo, path.Join(path.Dir(pkg), baseParts[0]), fmt.Sprintf("cue_%s_library", cuePkg))
+					depSet[l.String()] = true
+				}
+			}
 		}
 	}
 	if len(depSet) > 0 {
