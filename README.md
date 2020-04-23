@@ -1,7 +1,7 @@
 # CUE Rules for Bazel
 
 ## Rules
-* [cue_binary](#cue_binary)
+* [cue_export](#cue_export)
 * [cue_library](#cue_library)
 
 ## Overview
@@ -33,11 +33,11 @@ cue_register_toolchains()
 
 ## Build Rule Reference
 
-<a name="reference-cue_binary"></a>
-### cue_binary
+<a name="reference-cue_export"></a>
+### cue_export
 
 ```py
-cue_binary(name, src, deps=[], output_format=<format>", output_name=<src_filename.cue>)
+cue_export(name, src, deps=[], output_format=<format>", output_name=<src_filename.cue>)
 ```
 
 Exports a single CUE entry-point file. The entry-point file may have
@@ -57,7 +57,7 @@ dependencies (`cue_library` rules, see below).
 cue_library(name, srcs, importpath, deps=[])
 ```
 
-Defines a collection of Cue files that can be depended on by a `cue_binary`. Does not generate
+Defines a collection of Cue files that can be depended on by a `cue_export`. Does not generate
 any outputs.
 
 | Attribute    | Description                                                                                       |

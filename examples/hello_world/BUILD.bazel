@@ -1,6 +1,6 @@
-load("@com_github_tnarg_rules_cue//cue:cue.bzl", "cue_binary")
+load("@com_github_tnarg_rules_cue//cue:cue.bzl", "cue_export")
 
-cue_binary(
+cue_export(
     name = "hello_world",
     src = "hello_world.cue",
     visibility = ["//visibility:public"],

@@ -41,7 +41,7 @@ func (cl *cueLang) Kinds() map[string]rule.KindInfo {
 			},
 			ResolveAttrs: map[string]bool{"deps": true},
 		},
-		"cue_binary": {
+		"cue_export": {
 			MatchAny: true,
 			NonEmptyAttrs: map[string]bool{
 				"deps": true,
@@ -64,7 +64,7 @@ func (cl *cueLang) Loads() []rule.LoadInfo {
 	return []rule.LoadInfo{
 		{
 			Name:    "@com_github_tnarg_rules_cue//cue:cue.bzl",
-			Symbols: []string{"cue_binary", "cue_library"},
+			Symbols: []string{"cue_export", "cue_library"},
 		},
 	}
 }

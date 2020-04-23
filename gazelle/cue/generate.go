@@ -52,10 +52,10 @@ func (cl *cueLang) GenerateRules(args language.GenerateArgs) language.GenerateRe
 
 	expectedPkgName := path.Base(args.Rel)
 
-	// categorize cue files into binary and library sources
+	// categorize cue files into export and library sources
 	// cue_libary names are based on cue package name.
 	var cueLibSrcs []string
-	cueBinSrc := make(map[string]string)
+	cueExpSrc := make(map[string]string)
 	cueImports := make(map[string][]string)
 
 	for fname, cueFile := range cueFiles {
@@ -63,7 +63,7 @@ func (cl *cueLang) GenerateRules(args language.GenerateArgs) language.GenerateRe
 		pkg := cueFile.PackageName()
 		if pkg == "" {
 			target = binName(fname)
-			cueBinSrc[target] = fname
+			cueExpSrc[target] = fname
 		} else if pkg == expectedPkgName {
 			target = cueDefaultLibrary
 			cueLibSrcs = append(cueLibSrcs, fname)
@@ -88,8 +88,8 @@ func (cl *cueLang) GenerateRules(args language.GenerateArgs) language.GenerateRe
 		res.Gen = append(res.Gen, rule)
 	}
 
-	for tgt, src := range cueBinSrc {
-		rule := rule.NewRule("cue_binary", tgt)
+	for tgt, src := range cueExpSrc {
+		rule := rule.NewRule("cue_export", tgt)
 		rule.SetAttr("src", src)
 		rule.SetAttr("visibility", []string{"//visibility:public"})
 		imprts := cueImports[tgt]
@@ -103,7 +103,7 @@ func (cl *cueLang) GenerateRules(args language.GenerateArgs) language.GenerateRe
 		res.Imports[i] = r.PrivateAttr(config.GazelleImportsKey)
 	}
 
-	res.Empty = generateEmpty(args.File, cueLibSrcs, cueBinSrc)
+	res.Empty = generateEmpty(args.File, cueLibSrcs, cueExpSrc)
 
 	return res
 }
@@ -134,7 +134,7 @@ func binName(basename string) string {
 	return strcase.ToSnake(strings.Join(parts[:len(parts)-1], "_"))
 }
 
-func generateEmpty(f *rule.File, cueLibSrcs []string, cueBinSrc map[string]string) []*rule.Rule {
+func generateEmpty(f *rule.File, cueLibSrcs []string, cueExpSrc map[string]string) []*rule.Rule {
 	if f == nil {
 		return nil
 	}
@@ -145,9 +145,9 @@ func generateEmpty(f *rule.File, cueLibSrcs []string, cueBinSrc map[string]strin
 			if r.Name() == cueDefaultLibrary && cueLibSrcs == nil {
 				empty = append(empty, rule.NewRule("cue_library", r.Name()))
 			}
-		case "cue_binary":
-			if _, ok := cueBinSrc[r.Name()]; !ok {
-				empty = append(empty, rule.NewRule("cue_binary", r.Name()))
+		case "cue_export":
+			if _, ok := cueExpSrc[r.Name()]; !ok {
+				empty = append(empty, rule.NewRule("cue_export", r.Name()))
 			}
 		default:
 			// ignore

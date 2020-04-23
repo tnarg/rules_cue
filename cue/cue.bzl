@@ -1,5 +1,5 @@
 CuePkg = provider(
-    doc = "Collects files from cue_library for use in downstream cue_binary",
+    doc = "Collects files from cue_library for use in downstream cue_export",
     fields = {
         "transitive_pkgs": "Cue pkg zips for this target and its dependencies",
     },
@@ -193,7 +193,7 @@ ${CUE} export -o ${OUT} $@ ${SRC}
         use_default_shell_env = True,
     )
 
-def _cue_binary_impl(ctx):
+def _cue_export_impl(ctx):
     src_zip = _zip_src(ctx, [ctx.file.src])
     merged = _pkg_merge(ctx, src_zip)
     _cue_export(ctx, merged, ctx.outputs.export)
@@ -259,15 +259,15 @@ def _strip_extension(path):
     components.pop()
     return ".".join(components)
 
-def _cue_binary_outputs(src, output_name, output_format):
-    """Get map of cue_binary outputs.
+def _cue_export_outputs(src, output_name, output_format):
+    """Get map of cue_export outputs.
     Note that the arguments to this function are named after attributes on the rule.
     Args:
       src: The rule's `src` attribute
       output_name: The rule's `output_name` attribute
       output_format: The rule's `output_format` attribute
     Returns:
-      Outputs for the cue_binary
+      Outputs for the cue_export
     """
 
     outputs = {
@@ -276,7 +276,7 @@ def _cue_binary_outputs(src, output_name, output_format):
 
     return outputs
 
-_cue_binary_attrs = {
+_cue_export_attrs = {
     "src": attr.label(
         doc = "Cue entrypoint file",
         mandatory = True,
@@ -329,8 +329,8 @@ the input name, so use this attribute with caution.""",
     )
 }
 
-cue_binary = rule(
-    implementation = _cue_binary_impl,
-    attrs = _cue_binary_attrs,
-    outputs = _cue_binary_outputs,
+cue_export = rule(
+    implementation = _cue_export_impl,
+    attrs = _cue_export_attrs,
+    outputs = _cue_export_outputs,
 )
