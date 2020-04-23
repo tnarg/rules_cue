@@ -57,26 +57,24 @@ def _cue_library_impl(ctx):
 
     def_out = _cue_def(ctx)
 
-    args = ctx.actions.args()
-
-    # Create the manifest input to cuepkg
-    manifest = struct(
-        importpath = ctx.attr.importpath,
-        srcs = [src.path for src in ctx.files.srcs],
-    )
-
+    # Create the manifest input to zipper
+    manifest = "".join(["pkg/"+ctx.attr.importpath+"/"+src.basename + "=" + src.path + "\n" for src in ctx.files.srcs])
     manifest_file = ctx.actions.declare_file(ctx.label.name + "~manifest")
-    ctx.actions.write(manifest_file, manifest.to_json())
-    args.add("-manifest", manifest_file.path)
+    ctx.actions.write(manifest_file, manifest)
 
     pkg = ctx.actions.declare_file(ctx.label.name + ".zip")
-    args.add("-out", pkg.path)
+
+    args = ctx.actions.args()
+    args.add("c")
+    args.add(pkg.path)
+    args.add("@" + manifest_file.path)
+
 
     ctx.actions.run(
         mnemonic = "CuePkg",
         outputs = [pkg],
         inputs = [def_out, manifest_file] + ctx.files.srcs,
-        executable = ctx.executable._cuepkg,
+        executable = ctx.executable._zipper,
         arguments = [args],
     )
 
@@ -236,12 +234,6 @@ _cue_library_attrs = {
     ),
     "_zipmerge": attr.label(
         default = Label("@io_rsc_zipmerge//:zipmerge"),
-        executable = True,
-        allow_single_file = True,
-        cfg = "host",
-    ),
-    "_cuepkg": attr.label(
-        default = Label("//cue/tools/cuepkg"),
         executable = True,
         allow_single_file = True,
         cfg = "host",
