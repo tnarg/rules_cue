@@ -1,6 +1,7 @@
 package cuelang
 
 import (
+	"fmt"
 	"log"
 	"path"
 	"path/filepath"
@@ -13,10 +14,6 @@ import (
 	"github.com/bazelbuild/bazel-gazelle/language"
 	"github.com/bazelbuild/bazel-gazelle/rule"
 	"github.com/iancoleman/strcase"
-)
-
-const (
-	cueDefaultLibrary = "cue_default_library"
 )
 
 // GenerateRules extracts build metadata from source files in a
@@ -50,52 +47,60 @@ func (cl *cueLang) GenerateRules(args language.GenerateArgs) language.GenerateRe
 		cueFiles[f] = cueFile
 	}
 
-	expectedPkgName := path.Base(args.Rel)
+	implicitPkgName := path.Base(args.Rel)
+	baseImportPath := computeImportPath(args)
 
 	// categorize cue files into export and library sources
 	// cue_libary names are based on cue package name.
-	var cueLibSrcs []string
-	cueExpSrc := make(map[string]string)
-	cueImports := make(map[string][]string)
+	libraries := make(map[string]*cueLibrary)
+	exports := make(map[string]*cueExport)
 
 	for fname, cueFile := range cueFiles {
-		var target string
 		pkg := cueFile.PackageName()
 		if pkg == "" {
-			target = binName(fname)
-			cueExpSrc[target] = fname
-		} else if pkg == expectedPkgName {
-			target = cueDefaultLibrary
-			cueLibSrcs = append(cueLibSrcs, fname)
+			tgt := exportName(fname)
+			export := &cueExport{
+				Name:    tgt,
+				Src:     fname,
+				Imports: make(map[string]bool),
+			}
+			for _, imprt := range cueFile.Imports {
+				imprt := strings.Trim(imprt.Path.Value, "\"")
+				export.Imports[imprt] = true
+			}
+			exports[tgt] = export
 		} else {
-			log.Printf("ignoring cue file: path=%q, pkg=%q", fname, pkg)
-		}
-		for _, imprt := range cueFile.Imports {
-			imprt := strings.Trim(imprt.Path.Value, "\"")
-			cueImports[target] = append(cueImports[target], imprt)
+			tgt := fmt.Sprintf("cue_%s_library", pkg)
+			lib, ok := libraries[tgt]
+			if !ok {
+				var importPath string
+				if pkg == implicitPkgName {
+					importPath = baseImportPath
+				} else {
+					importPath = fmt.Sprintf("%s:%s", baseImportPath, pkg)
+				}
+				lib = &cueLibrary{
+					Name:       tgt,
+					ImportPath: importPath,
+					Imports:    make(map[string]bool),
+				}
+				libraries[tgt] = lib
+			}
+			lib.Srcs = append(lib.Srcs, fname)
+			for _, imprt := range cueFile.Imports {
+				imprt := strings.Trim(imprt.Path.Value, "\"")
+				lib.Imports[imprt] = true
+			}
 		}
 	}
 
 	var res language.GenerateResult
-	if cueLibSrcs != nil {
-		rule := rule.NewRule("cue_library", cueDefaultLibrary)
-		rule.SetAttr("srcs", cueLibSrcs)
-		rule.SetAttr("visibility", []string{"//visibility:public"})
-		rule.SetAttr("importpath", computeImportPath(args))
-		imprts := cueImports[cueDefaultLibrary]
-		sort.Strings(imprts)
-		rule.SetPrivateAttr(config.GazelleImportsKey, imprts)
-		res.Gen = append(res.Gen, rule)
+	for _, library := range libraries {
+		res.Gen = append(res.Gen, library.ToRule())
 	}
 
-	for tgt, src := range cueExpSrc {
-		rule := rule.NewRule("cue_export", tgt)
-		rule.SetAttr("src", src)
-		rule.SetAttr("visibility", []string{"//visibility:public"})
-		imprts := cueImports[tgt]
-		sort.Strings(imprts)
-		rule.SetPrivateAttr(config.GazelleImportsKey, imprts)
-		res.Gen = append(res.Gen, rule)
+	for _, export := range exports {
+		res.Gen = append(res.Gen, export.ToRule())
 	}
 
 	res.Imports = make([]interface{}, len(res.Gen))
@@ -103,7 +108,7 @@ func (cl *cueLang) GenerateRules(args language.GenerateArgs) language.GenerateRe
 		res.Imports[i] = r.PrivateAttr(config.GazelleImportsKey)
 	}
 
-	res.Empty = generateEmpty(args.File, cueLibSrcs, cueExpSrc)
+	res.Empty = generateEmpty(args.File, libraries, exports)
 
 	return res
 }
@@ -129,12 +134,12 @@ func computeImportPath(args language.GenerateArgs) string {
 	return filepath.Join(conf.prefix, suffix)
 }
 
-func binName(basename string) string {
+func exportName(basename string) string {
 	parts := strings.Split(basename, ".")
 	return strcase.ToSnake(strings.Join(parts[:len(parts)-1], "_"))
 }
 
-func generateEmpty(f *rule.File, cueLibSrcs []string, cueExpSrc map[string]string) []*rule.Rule {
+func generateEmpty(f *rule.File, libraries map[string]*cueLibrary, exports map[string]*cueExport) []*rule.Rule {
 	if f == nil {
 		return nil
 	}
@@ -142,11 +147,11 @@ func generateEmpty(f *rule.File, cueLibSrcs []string, cueExpSrc map[string]strin
 	for _, r := range f.Rules {
 		switch r.Kind() {
 		case "cue_library":
-			if r.Name() == cueDefaultLibrary && cueLibSrcs == nil {
+			if _, ok := libraries[r.Name()]; !ok {
 				empty = append(empty, rule.NewRule("cue_library", r.Name()))
 			}
 		case "cue_export":
-			if _, ok := cueExpSrc[r.Name()]; !ok {
+			if _, ok := exports[r.Name()]; !ok {
 				empty = append(empty, rule.NewRule("cue_export", r.Name()))
 			}
 		default:
@@ -154,4 +159,45 @@ func generateEmpty(f *rule.File, cueLibSrcs []string, cueExpSrc map[string]strin
 		}
 	}
 	return empty
+}
+
+type cueLibrary struct {
+	Name       string
+	ImportPath string
+	Srcs       []string
+	Imports    map[string]bool
+}
+
+func (cl *cueLibrary) ToRule() *rule.Rule {
+	rule := rule.NewRule("cue_library", cl.Name)
+	sort.Strings(cl.Srcs)
+	rule.SetAttr("srcs", cl.Srcs)
+	rule.SetAttr("visibility", []string{"//visibility:public"})
+	rule.SetAttr("importpath", cl.ImportPath)
+	var imprts []string
+	for imprt, _ := range cl.Imports {
+		imprts = append(imprts, imprt)
+	}
+	sort.Strings(imprts)
+	rule.SetPrivateAttr(config.GazelleImportsKey, imprts)
+	return rule
+}
+
+type cueExport struct {
+	Name    string
+	Src     string
+	Imports map[string]bool
+}
+
+func (ce *cueExport) ToRule() *rule.Rule {
+	rule := rule.NewRule("cue_export", ce.Name)
+	rule.SetAttr("src", ce.Src)
+	rule.SetAttr("visibility", []string{"//visibility:public"})
+	var imprts []string
+	for imprt, _ := range ce.Imports {
+		imprts = append(imprts, imprt)
+	}
+	sort.Strings(imprts)
+	rule.SetPrivateAttr(config.GazelleImportsKey, imprts)
+	return rule
 }

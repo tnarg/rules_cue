@@ -1,7 +1,7 @@
 load("@com_github_tnarg_rules_cue//cue:cue.bzl", "cue_library")
 
 cue_library(
-    name = "cue_default_library",
+    name = "cue_watch_library",
     srcs = [
         "doc_go_gen.cue",
         "filter_go_gen.cue",
@@ -11,7 +11,5 @@ cue_library(
     ],
     importpath = "k8s.io/apimachinery/pkg/watch",
     visibility = ["//visibility:public"],
-    deps = [
-        "//examples/k8s.io/apimachinery/pkg/runtime:cue_default_library",
-    ],
+    deps = ["//examples/k8s.io/apimachinery/pkg/runtime:cue_runtime_library"],
 )

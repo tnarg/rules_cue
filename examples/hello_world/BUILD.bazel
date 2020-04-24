@@ -5,3 +5,17 @@ cue_export(
     src = "hello_world.cue",
     visibility = ["//visibility:public"],
 )
+
+cue_export(
+    name = "de",
+    src = "de.cue",
+    visibility = ["//visibility:public"],
+    deps = ["//examples/lang:cue_de_library"],
+)
+
+cue_export(
+    name = "en",
+    src = "en.cue",
+    visibility = ["//visibility:public"],
+    deps = ["//examples/lang:cue_en_library"],
+)

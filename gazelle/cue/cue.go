@@ -42,7 +42,6 @@ func (cl *cueLang) Kinds() map[string]rule.KindInfo {
 			ResolveAttrs: map[string]bool{"deps": true},
 		},
 		"cue_export": {
-			MatchAny: true,
 			NonEmptyAttrs: map[string]bool{
 				"deps": true,
 				"src":  true,

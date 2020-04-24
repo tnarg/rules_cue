@@ -1,0 +1,15 @@
+load("@com_github_tnarg_rules_cue//cue:cue.bzl", "cue_library")
+
+cue_library(
+    name = "cue_en_library",
+    srcs = ["en.cue"],
+    importpath = "github.com/tnarg/rules_cue/examples/lang:en",
+    visibility = ["//visibility:public"],
+)
+
+cue_library(
+    name = "cue_de_library",
+    srcs = ["de.cue"],
+    importpath = "github.com/tnarg/rules_cue/examples/lang:de",
+    visibility = ["//visibility:public"],
+)

@@ -58,7 +58,8 @@ def _cue_library_impl(ctx):
     def_out = _cue_def(ctx)
 
     # Create the manifest input to zipper
-    manifest = "".join(["pkg/"+ctx.attr.importpath+"/"+src.basename + "=" + src.path + "\n" for src in ctx.files.srcs])
+    pkg = "pkg/"+ctx.attr.importpath.split(":")[0]
+    manifest = "".join([pkg+"/"+src.basename + "=" + src.path + "\n" for src in ctx.files.srcs])
     manifest_file = ctx.actions.declare_file(ctx.label.name + "~manifest")
     ctx.actions.write(manifest_file, manifest)
 

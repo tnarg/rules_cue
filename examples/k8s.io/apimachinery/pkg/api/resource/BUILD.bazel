@@ -1,7 +1,7 @@
 load("@com_github_tnarg_rules_cue//cue:cue.bzl", "cue_library")
 
 cue_library(
-    name = "cue_default_library",
+    name = "cue_resource_library",
     srcs = [
         "amount_go_gen.cue",
         "quantity_go_gen.cue",
