@@ -2,6 +2,23 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 
 _cue_runtimes = {
+    "0.1.2": [
+        {
+            "os": "Linux",
+            "arch": "x86_64",
+            "sha256": "ad47b69a43197af7a150974969ff51034aa981b4df264c0221dbcc3737280209",
+        },
+        {
+            "os": "Darwin",
+            "arch": "x86_64",
+            "sha256": "0580c7db622eabfcec8f7946bbd7819b7d38ebf11ac79f918d2deccc3544d443",
+        },
+        {
+            "os": "Windows",
+            "arch": "x86_64",
+            "sha256": "f24e8ff652ae3bdc5ceca09901570f9894f27c75ce94ee67f0c37544ae5a3c75",
+        },
+    ],
     "0.1.1": [
         {
             "os": "Linux",
@@ -21,7 +38,7 @@ _cue_runtimes = {
     ]
 }
 
-def cue_register_toolchains(version = "0.1.1"):
+def cue_register_toolchains(version = "0.1.2"):
     for platform in _cue_runtimes[version]:
         http_archive(
             name = "cue_runtime_%s_%s" % (platform["os"].lower(), platform["arch"]),
