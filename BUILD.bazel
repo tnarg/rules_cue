@@ -1,5 +1,7 @@
 load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle_binary", "gazelle")
 
+exports_files(["go.bzl"], visibility = ["//visibility:public"])
+
 gazelle_binary(
     name = "gazelle_binary",
     languages = DEFAULT_LANGUAGES + ["@com_github_tnarg_rules_cue//gazelle/cue:go_default_library"],

@@ -29,15 +29,18 @@ go_rules_dependencies()
 
 go_register_toolchains()
 
-load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
 gazelle_dependencies()
 
 #
 # Eat our own dog food
 #
-load("//cue:deps.bzl", "cue_rules_dependencies", "cue_register_toolchains")
-
-cue_rules_dependencies()
+load("//cue:deps.bzl", "cue_register_toolchains")
 
 cue_register_toolchains()
+
+load("//:go.bzl", "go_modules")
+
+# gazelle:repository_macro go.bzl%go_modules
+go_modules()

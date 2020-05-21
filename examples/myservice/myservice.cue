@@ -2,7 +2,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 )
 
-appsv1.Deployment & {
+appsv1.#Deployment & {
 	apiVersion: "extensions/v1beta1"
 	kind:       "Deployment"
 	metadata: {

@@ -2,6 +2,23 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 
 _cue_runtimes = {
+    "0.2.0": [
+        {
+            "os": "Linux",
+            "arch": "x86_64",
+            "sha256": "36c454c8ab48e3fe1d0bb10a461b8b4e362566b50048a5e2808e221248f373d5",
+        },
+        {
+            "os": "Darwin",
+            "arch": "x86_64",
+            "sha256": "f38412b855bf5c3b97d2c7358ebaaccc088b707158809bd0fce889bbe050ba61",
+        },
+        {
+            "os": "Windows",
+            "arch": "x86_64",
+            "sha256": "2d1d7f45c61808ba83692f1aefe804894e19d032aec06a91475cb5923bfa6bc4",
+        },
+    ],
     "0.1.2": [
         {
             "os": "Linux",
@@ -38,16 +55,19 @@ _cue_runtimes = {
     ]
 }
 
-def cue_register_toolchains(version = "0.1.2"):
+def cue_register_toolchains(version = "0.2.0"):
     for platform in _cue_runtimes[version]:
+        suffix = "tar.gz"
+        if platform["os"] == "Windows":
+            suffix = "zip"
         http_archive(
             name = "cue_runtime_%s_%s" % (platform["os"].lower(), platform["arch"]),
             build_file_content = """exports_files(["cue"], visibility = ["//visibility:public"])""",
-            url = "https://github.com/cuelang/cue/releases/download/v%s/cue_%s_%s_%s.tar.gz" % (version, version, platform["os"], platform["arch"]),
+            url = "https://github.com/cuelang/cue/releases/download/v%s/cue_%s_%s_%s.%s" % (version, version, platform["os"], platform["arch"], suffix),
             sha256 = platform["sha256"],
         )
 
-def cue_rules_dependencies(version = "0.1.1"):
+def cue_rules_dependencies():
     go_repository(
         name = "com_github_cockroachdb_apd_v2",
         importpath = "github.com/cockroachdb/apd/v2",
