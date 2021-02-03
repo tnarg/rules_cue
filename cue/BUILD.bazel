@@ -25,7 +25,6 @@ config_setting(
 
 genrule(
     name = "cue_runtime",
-    output_to_bindir = 1,
     srcs = select({
         "//cue:linux_x86_64": ["@cue_runtime_linux_x86_64//:cue"],
         "//cue:darwin_x86_64": ["@cue_runtime_darwin_x86_64//:cue"],
@@ -34,4 +33,5 @@ genrule(
     outs = ["bin/cue"],
     cmd = "cp $(<) $(@)",
     executable = True,
+    output_to_bindir = 1,
 )
