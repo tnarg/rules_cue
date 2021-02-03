@@ -4,6 +4,7 @@ cue_library(
     name = "cue_resource_library",
     srcs = [
         "amount_go_gen.cue",
+        "math_go_gen.cue",
         "quantity_go_gen.cue",
     ],
     importpath = "k8s.io/apimachinery/pkg/api/resource",

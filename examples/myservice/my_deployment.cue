@@ -1,8 +1,12 @@
+package myservice
+
 import (
 	appsv1 "k8s.io/api/apps/v1"
 )
 
-appsv1.#Deployment & {
+#MyDeployment: appsv1.#Deployment & {
+    #Replicas: int
+
 	apiVersion: "extensions/v1beta1"
 	kind:       "Deployment"
 	metadata: {
@@ -11,7 +15,7 @@ appsv1.#Deployment & {
 		labels: app: "myservice"
 	}
 	spec: {
-		replicas: 1
+		replicas: #Replicas
 		strategy: type: "Recreate"
 		selector: matchLabels: app: "myservice"
 		template: {

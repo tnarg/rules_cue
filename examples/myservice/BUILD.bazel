@@ -1,8 +1,11 @@
-load("@com_github_tnarg_rules_cue//cue:cue.bzl", "cue_export")
+# gazelle:prefix example.com/myservice
 
-cue_export(
-    name = "myservice",
-    src = "myservice.cue",
+load("@com_github_tnarg_rules_cue//cue:cue.bzl", "cue_library")
+
+cue_library(
+    name = "cue_myservice_library",
+    srcs = ["my_deployment.cue"],
+    importpath = "example.com/myservice",
     visibility = ["//visibility:public"],
     deps = ["//examples/k8s.io/api/apps/v1:cue_v1_library"],
 )

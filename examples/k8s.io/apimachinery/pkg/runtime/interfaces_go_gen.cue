@@ -17,8 +17,8 @@ package runtime
 // input the output they produce is exactly the same.
 #Identifier: string // #enumIdentifier
 
-//#enumIdentifier:
-//	_#noopEncoderIdentifier
+#enumIdentifier:
+	_#noopEncoderIdentifier
 
 // Encoder writes objects to a serialized form
 #Encoder: _

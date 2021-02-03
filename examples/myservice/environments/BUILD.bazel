@@ -1,0 +1,15 @@
+load("@com_github_tnarg_rules_cue//cue:cue.bzl", "cue_export")
+
+cue_export(
+    name = "dev",
+    src = "dev.cue",
+    visibility = ["//visibility:public"],
+    deps = ["//examples/myservice:cue_myservice_library"],
+)
+
+cue_export(
+    name = "prod",
+    src = "prod.cue",
+    visibility = ["//visibility:public"],
+    deps = ["//examples/myservice:cue_myservice_library"],
+)
