@@ -18,13 +18,13 @@ published versions:
 http_archive(
     name = "com_github_tnarg_rules_cue",
     # Make sure to check for the latest version when you install
-    url = "https://github.com/tnarg/rules_cue/archive/b49de6e8b29427e879dff9950ed04d0df2d49f25.zip",
-    strip_prefix = "rules_cue-b49de6e8b29427e879dff9950ed04d0df2d49f25",
-    sha256 = "dd3f3cd6c1d66cf77e20af60a4c309d34039c2727baeafbad72ddd13aec5414a",
+    url = "https://github.com/tnarg/rules_cue/archive/be98df2981025bf1389510797ea11e0e37aa761f.zip",
+    strip_prefix = "rules_cue-be98df2981025bf1389510797ea11e0e37aa761f",
+    sha256 = "ee6eea3de252ebc8fb05c23e8d370e32c4783b36cd1c6ec9ea72411a086ac35e",
 )
 
 load("@com_github_tnarg_rules_cue//cue:deps.bzl", "cue_register_toolchains")
-load("@com_github_tnarg_rules_cue//go.bzl", cue_go_modules "go_modules")
+load("@com_github_tnarg_rules_cue//go.bzl", cue_go_modules = "go_modules")
 
 cue_go_modules()
 
@@ -79,11 +79,7 @@ load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle_binary", "gazelle
 
 gazelle_binary(
     name = "gazelle_binary",
-    languages = DEFAULT_LANGUAGES + ["@com_github_tnarg_rules_cue//gazelle/cue:go_default_library"],
-    msan = "off",
-    pure = "off",
-    race = "off",
-    static = "off",
+    languages = DEFAULT_LANGUAGES + ["@com_github_tnarg_rules_cue//gazelle/cue"],
     visibility = ["//visibility:public"],
 )
 
