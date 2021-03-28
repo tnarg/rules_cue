@@ -49,7 +49,7 @@ dependencies (`cue_library` rules, see below).
 | `name`          | Unique name for this rule (required)                                          |
 | `src`           | Cue compilation entry-point (required).                                       |
 | `deps`          | List of dependencies for the `src`. Each dependency is a `cue_library`        |
-| `output_format` | It should be one of :value:`json` or :value:`yaml`.                           |
+| `output_format` | It should be one of `json`, `text`, or `yaml`.                                |
 | `output_name`   | Output file name, including extension. Defaults to `<src_name>.json`          |
 
 ### cue_library
