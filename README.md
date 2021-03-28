@@ -46,11 +46,13 @@ dependencies (`cue_library` rules, see below).
 
 | Attribute       | Description                                                                   |
 |-----------------|-------------------------------------------------------------------------------|
-| `name`          | Unique name for this rule (required)                                          |
+| `name`          | Unique name for this rule (required).                                         |
 | `src`           | Cue compilation entry-point (required).                                       |
-| `deps`          | List of dependencies for the `src`. Each dependency is a `cue_library`        |
+| `deps`          | List of dependencies for the `src`. Each dependency is a `cue_library`.       |
+| `escape`        | Use HTML escaping.                                                            |
+| `expression`    | CUE expression selecting a single value to export.                            |
 | `output_format` | It should be one of `json`, `text`, or `yaml`.                                |
-| `output_name`   | Output file name, including extension. Defaults to `<src_name>.json`          |
+| `output_name`   | Output file name, including extension. Defaults to `<src_name>.json`.         |
 
 ### cue_library
 

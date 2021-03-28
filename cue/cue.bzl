@@ -60,8 +60,8 @@ def _cue_library_impl(ctx):
     def_out = _cue_def(ctx)
 
     # Create the manifest input to zipper
-    pkg = "pkg/"+ctx.attr.importpath.split(":")[0]
-    manifest = "".join([pkg+"/"+src.basename + "=" + src.path + "\n" for src in ctx.files.srcs])
+    pkg = "pkg/" + ctx.attr.importpath.split(":")[0]
+    manifest = "".join([pkg + "/" + src.basename + "=" + src.path + "\n" for src in ctx.files.srcs])
     manifest_file = ctx.actions.declare_file(ctx.label.name + "~manifest")
     ctx.actions.write(manifest_file, manifest)
 
@@ -71,7 +71,6 @@ def _cue_library_impl(ctx):
     args.add("c")
     args.add(pkg.path)
     args.add("@" + manifest_file.path)
-
 
     ctx.actions.run(
         mnemonic = "CuePkg",
@@ -160,7 +159,10 @@ def _cue_export(ctx, merged, output):
 
     if ctx.attr.escape:
         args.add("--escape")
-    #if ctx.attr.ignore:
+    if ctx.attr.expression:
+        args.add("--expression=" + ctx.attr.expression)
+
+    #if ctx.attr.ignore:2
     #    args.add("--ignore")
     #if ctx.attr.simplify:
     #    args.add("--simplify")
@@ -171,7 +173,7 @@ def _cue_export(ctx, merged, output):
     #if ctx.attr.debug:
     #    args.add("--debug")
 
-    args.add_joined(["--out", ctx.attr.output_format], join_with = "=")
+    args.add("--out=" + ctx.attr.output_format)
     #args.add(input.path)
 
     ctx.actions.run_shell(
@@ -202,8 +204,6 @@ def _cue_export_impl(ctx):
         files = depset([ctx.outputs.export]),
         runfiles = ctx.runfiles(files = [ctx.outputs.export]),
     )
-
-
 
 _cue_deps_attr = attr.label_list(
     doc = "cue_library targets to include in the evaluation",
@@ -285,6 +285,10 @@ _cue_export_attrs = {
         default = False,
         doc = "Use HTML escaping.",
     ),
+    "expression": attr.string(
+        doc = "CUE expression selecting a single value to export.",
+        default = "",
+    ),
     #debug            give detailed error info
     #ignore           proceed in the presence of errors
     #simplify         simplify output
@@ -326,7 +330,7 @@ the input name, so use this attribute with caution.""",
         executable = True,
         allow_single_file = True,
         cfg = "host",
-    )
+    ),
 }
 
 cue_export = rule(
@@ -380,7 +384,7 @@ def _cue_repository_impl(ctx):
             "-repo_root",
             ctx.path(""),
             "-repo_config",
-            ctx.path(ctx.attr.build_config)
+            ctx.path(ctx.attr.build_config),
         ]
         if ctx.attr.build_file_name:
             cmd.extend(["-build_file_name", ctx.attr.build_file_name])
@@ -443,7 +447,7 @@ cue_repository = repository_rule(
             ],
         ),
         "build_extra_args": attr.string_list(),
-        "build_config": attr.label(default= "@bazel_gazelle_go_repository_config//:WORKSPACE"),
+        "build_config": attr.label(default = "@bazel_gazelle_go_repository_config//:WORKSPACE"),
         "build_directives": attr.string_list(default = []),
 
         # Patches to apply after running gazelle.
