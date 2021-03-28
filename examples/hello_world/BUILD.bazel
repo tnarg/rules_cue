@@ -7,6 +7,14 @@ cue_export(
 )
 
 cue_export(
+    name = "message",
+    src = "hello_world.cue",
+    expression = "message",
+    output_format = "text",
+    visibility = ["//visibility:public"],
+)
+
+cue_export(
     name = "de",
     src = "de.cue",
     visibility = ["//visibility:public"],
