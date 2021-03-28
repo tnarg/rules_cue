@@ -264,9 +264,13 @@ def _cue_export_outputs(src, output_name, output_format):
     Returns:
       Outputs for the cue_export
     """
-
+    extension_by_format = {
+        "json": "json",
+        "text": "txt",
+        "yaml": "yaml",
+    }
     outputs = {
-        "export": output_name or _strip_extension(src.name) + "." + output_format,
+        "export": output_name or _strip_extension(src.name) + "." + extension_by_format[output_format],
     }
 
     return outputs
@@ -300,6 +304,7 @@ the input name, so use this attribute with caution.""",
         default = "json",
         values = [
             "json",
+            "text",
             "yaml",
         ],
     ),
