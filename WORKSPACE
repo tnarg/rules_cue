@@ -23,11 +23,11 @@ http_archive(
     ],
 )
 
-load("@io_bazel_rules_go//go:deps.bzl", "go_rules_dependencies", "go_register_toolchains")
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 
 go_rules_dependencies()
 
-go_register_toolchains(version = "1.15.7")
+go_register_toolchains(version = "1.16.2")
 
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
@@ -38,7 +38,7 @@ gazelle_dependencies()
 #
 load("//cue:deps.bzl", "cue_register_toolchains")
 
-cue_register_toolchains(version="0.2.2")
+cue_register_toolchains()
 
 load("//:go.bzl", "go_modules")
 
