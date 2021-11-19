@@ -18,9 +18,9 @@ published versions:
 http_archive(
     name = "com_github_tnarg_rules_cue",
     # Make sure to check for the latest version when you install
-    url = "https://github.com/tnarg/rules_cue/archive/b49de6e8b29427e879dff9950ed04d0df2d49f25.zip",
-    strip_prefix = "rules_cue-b49de6e8b29427e879dff9950ed04d0df2d49f25",
-    sha256 = "dd3f3cd6c1d66cf77e20af60a4c309d34039c2727baeafbad72ddd13aec5414a",
+    url = "https://github.com/tnarg/rules_cue/archive/e3ed06bc3ce1c49afb05f70327ef1119fbdcb61c.zip",
+    strip_prefix = "rules_cue-e3ed06bc3ce1c49afb05f70327ef1119fbdcb61c",
+    sha256 = "7413394c4c0372e9ad93a2027216a351f355f6abad42d5707ecfaf00cd27a609",
 )
 
 load("@com_github_tnarg_rules_cue//cue:deps.bzl", "cue_register_toolchains")
