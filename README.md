@@ -24,7 +24,7 @@ http_archive(
 )
 
 load("@com_github_tnarg_rules_cue//cue:deps.bzl", "cue_register_toolchains")
-load("@com_github_tnarg_rules_cue//go.bzl", cue_go_modules "go_modules")
+load("@com_github_tnarg_rules_cue//:go.bzl", cue_go_modules "go_modules")
 
 cue_go_modules()
 
