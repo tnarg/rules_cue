@@ -2,6 +2,44 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 
 _cue_runtimes = {
+    "0.4.2": [
+        {
+            "os": "linux",
+            "arch": "x86_64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.4.2/cue_v0.4.2_linux_amd64.tar.gz",
+            "sha256": "d43cf77e54f42619d270b8e4c1836aec87304daf243449c503251e6943f7466a",
+        },
+        {
+            "os": "linux",
+            "arch": "arm64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.4.2/cue_v0.4.2_linux_arm64.tar.gz",
+            "sha256": "6515c1f1b6fc09d083be533019416b28abd91e5cdd8ef53cd0719a4b4b0cd1c7",
+        },
+        {
+            "os": "darwin",
+            "arch": "x86_64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.4.2/cue_v0.4.2_darwin_amd64.tar.gz",
+            "sha256": "3da1576d36950c64acb7d7a7b80f34e5935ac76b9ff607517981eef44a88a31b",
+        },
+        {
+            "os": "darwin",
+            "arch": "arm64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.4.2/cue_v0.4.2_darwin_arm64.tar.gz",
+            "sha256": "21fcfbe52beff7bae510bb6267fe33a5785039bd7d5f32e3c3222c55580dd85c",
+        },
+        {
+            "os": "windows",
+            "arch": "x86_64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.4.0/cue_v0.4.2_windows_amd64.zip",
+            "sha256": "95be4cd6b04b6c729f4f85a551280378d8939773c2eaecd79c70f907b5cae847",
+        },
+        {
+            "os": "windows",
+            "arch": "arm64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.4.0/cue_v0.4.2_windows_arm64.zip",
+            "sha256": "e03325656ca20d464307f68e3070d774af37e5777156ae983e166d7d7aed60df",
+        },
+    ],
     "0.4.0": [
         {
             "os": "linux",
@@ -109,7 +147,7 @@ _cue_runtimes = {
     ]
 }
 
-def cue_register_toolchains(version = "0.4.0"):
+def cue_register_toolchains(version = "0.4.2"):
     for platform in _cue_runtimes[version]:
         suffix = "tar.gz"
         if platform["os"] == "Windows":
