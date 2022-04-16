@@ -5,7 +5,7 @@ import (
 )
 
 #MyDeployment: appsv1.#Deployment & {
-    #Replicas: int
+	#Replicas: int
 
 	apiVersion: "extensions/v1beta1"
 	kind:       "Deployment"
