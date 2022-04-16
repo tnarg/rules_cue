@@ -1,15 +1,18 @@
 # CUE Rules for Bazel
 
 ## Rules
+
 * [cue_export](#cue_export)
 * [cue_library](#cue_library)
 
 ## Overview
+
 These build rules are used for building [CUE][cue] projects with Bazel.
 
 [cue]: https://cuelang.org/
 
 ## Setup
+
 To use the CUE rules, add the following to your
 `WORKSPACE` file to add the external repositories for CUE, making sure to use the latest
 published versions:
@@ -24,17 +27,17 @@ http_archive(
 )
 
 load("@com_github_tnarg_rules_cue//cue:deps.bzl", "cue_register_toolchains")
-load("@com_github_tnarg_rules_cue//:go.bzl", cue_go_modules "go_modules")
+load("@com_github_tnarg_rules_cue//:go.bzl", cue_go_modules = "go_modules")
 
 cue_go_modules()
 
 cue_register_toolchains()
 ```
 
-
 ## Build Rule Reference
 
 <a name="reference-cue_export"></a>
+
 ### cue_export
 
 ```py
