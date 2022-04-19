@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go/private:common.bzl", "env_execute", "executable_extension")
+load("@io_bazel_rules_go//go/private:common.bzl", "env_execute")
 
 CuePkg = provider(
     doc = "Collects files from cue_library for use in downstream cue_export",
@@ -20,7 +20,7 @@ def _cue_def(ctx):
     "Cue def library"
     srcs_zip = _zip_src(ctx, ctx.files.srcs)
     merged = _pkg_merge(ctx, srcs_zip)
-    def_out = ctx.actions.declare_file(ctx.label.name + "~def.json")
+    def_out = ctx.actions.declare_file(ctx.label.name + "~def.cue")
 
     args = ctx.actions.args()
     args.add(ctx.executable._cue.path)
@@ -60,8 +60,8 @@ def _cue_library_impl(ctx):
     def_out = _cue_def(ctx)
 
     # Create the manifest input to zipper
-    pkg = "pkg/"+ctx.attr.importpath.split(":")[0]
-    manifest = "".join([pkg+"/"+src.basename + "=" + src.path + "\n" for src in ctx.files.srcs])
+    pkg = "pkg/" + ctx.attr.importpath.split(":")[0]
+    manifest = "".join([pkg + "/" + src.basename + "=" + src.path + "\n" for src in ctx.files.srcs])
     manifest_file = ctx.actions.declare_file(ctx.label.name + "~manifest")
     ctx.actions.write(manifest_file, manifest)
 
@@ -71,7 +71,6 @@ def _cue_library_impl(ctx):
     args.add("c")
     args.add(pkg.path)
     args.add("@" + manifest_file.path)
-
 
     ctx.actions.run(
         mnemonic = "CuePkg",
@@ -160,6 +159,7 @@ def _cue_export(ctx, merged, output):
 
     if ctx.attr.escape:
         args.add("--escape")
+
     #if ctx.attr.ignore:
     #    args.add("--ignore")
     #if ctx.attr.simplify:
@@ -202,8 +202,6 @@ def _cue_export_impl(ctx):
         files = depset([ctx.outputs.export]),
         runfiles = ctx.runfiles(files = [ctx.outputs.export]),
     )
-
-
 
 _cue_deps_attr = attr.label_list(
     doc = "cue_library targets to include in the evaluation",
@@ -321,7 +319,7 @@ the input name, so use this attribute with caution.""",
         executable = True,
         allow_single_file = True,
         cfg = "host",
-    )
+    ),
 }
 
 cue_export = rule(
@@ -375,7 +373,7 @@ def _cue_repository_impl(ctx):
             "-repo_root",
             ctx.path(""),
             "-repo_config",
-            ctx.path(ctx.attr.build_config)
+            ctx.path(ctx.attr.build_config),
         ]
         if ctx.attr.build_file_name:
             cmd.extend(["-build_file_name", ctx.attr.build_file_name])
@@ -438,7 +436,7 @@ cue_repository = repository_rule(
             ],
         ),
         "build_extra_args": attr.string_list(),
-        "build_config": attr.label(default= "@bazel_gazelle_go_repository_config//:WORKSPACE"),
+        "build_config": attr.label(default = "@bazel_gazelle_go_repository_config//:WORKSPACE"),
         "build_directives": attr.string_list(default = []),
 
         # Patches to apply after running gazelle.
