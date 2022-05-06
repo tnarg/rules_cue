@@ -1,0 +1,6 @@
+message: "Hello, world!"
+random_number: 150
+---
+message: "Hallo, Welt!"
+random_number: 125
+extra: true

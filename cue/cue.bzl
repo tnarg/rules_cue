@@ -328,6 +328,97 @@ cue_export = rule(
     outputs = _cue_export_outputs,
 )
 
+def _cue_vet_test_impl(ctx):
+    """This test actually run during build time.
+
+    It will never fail during runtime.
+    """
+    src_zip = _zip_src(ctx, [ctx.file.schema])
+    merged = _pkg_merge(ctx, src_zip)
+    output = ctx.actions.declare_file(ctx.label.name)
+
+    args = ctx.actions.args()
+
+    args.add(ctx.executable._cue.path)
+    args.add(merged.path)
+    args.add(ctx.file.schema.basename)
+    args.add(output.path)
+    if ctx.attr.schema_expr:
+        args.add("--schema=" + ctx.attr.schema_expr)
+
+    args.add_all([src.path for src in ctx.files.srcs])
+
+    ctx.actions.run_shell(
+        mnemonic = "CueVet",
+        tools = [ctx.executable._cue],
+        arguments = [args],
+        command = """
+set -euo pipefail
+
+CUE=$1; shift
+PKGZIP=$1; shift
+SCHEMA=$1; shift
+OUT=$1; shift
+
+unzip -q ${PKGZIP}
+${CUE} vet $@ "${SCHEMA}"
+touch $OUT
+""",
+        inputs = [merged] + ctx.files.srcs,
+        outputs = [output],
+        use_default_shell_env = True,
+    )
+    return DefaultInfo(
+        executable = output,
+        runfiles = ctx.runfiles(files = [ctx.executable._cue, ctx.file.schema, merged] + ctx.files.srcs),
+    )
+
+_cue_vet_test_attrs = {
+    "srcs": attr.label_list(
+        doc = "List of file to check against the schema. Will be individually tested.",
+        mandatory = True,
+        allow_files = [".json", ".yaml", ".yml", ".txt"],
+    ),
+    "schema": attr.label(
+        doc = "Cue file to use as schema",
+        mandatory = True,
+        allow_single_file = [".cue"],
+    ),
+    "schema_expr": attr.string(
+        doc = "Expression to select schema inside the schema file",
+        mandatory = False,
+    ),
+    "escape": attr.bool(
+        default = False,
+        doc = "Use HTML escaping.",
+    ),
+    "deps": _cue_deps_attr,
+    "_cue": attr.label(
+        default = Label("//cue:cue_runtime"),
+        executable = True,
+        allow_single_file = True,
+        cfg = "host",
+    ),
+    "_zipper": attr.label(
+        default = Label("@bazel_tools//tools/zip:zipper"),
+        executable = True,
+        allow_single_file = True,
+        cfg = "host",
+    ),
+    "_zipmerge": attr.label(
+        default = Label("@io_rsc_zipmerge//:zipmerge"),
+        executable = True,
+        allow_single_file = True,
+        cfg = "host",
+    ),
+}
+
+cue_vet_test = rule(
+    implementation = _cue_vet_test_impl,
+    attrs = _cue_vet_test_attrs,
+    test = True,
+)
+
 # We can't disable timeouts on Bazel, but we can set them to large values.
 _CUE_REPOSITORY_TIMEOUT = 86400
 
