@@ -38,8 +38,9 @@ CUE=$1; shift
 PKGZIP=$1; shift
 OUT=$1; shift
 
-unzip -q ${PKGZIP}
+unzip -qo ${PKGZIP}
 ${CUE} def -o ${OUT}
+zipinfo -1 ${PKGZIP} | xargs rm -rf
 """,
         inputs = [merged],
         outputs = [def_out],
