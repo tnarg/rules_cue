@@ -246,6 +246,118 @@ cue_library = rule(
     attrs = _cue_library_attrs,
 )
 
+_cue_vet_test_attrs = {
+    "data": attr.label_list(
+        doc = "Data to vet",
+        allow_files = [".yml", ".json"],
+        allow_empty = False,
+        mandatory = True,
+    ),
+    "schema": attr.label(
+	providers = [[CuePkg]],
+        allow_single_file = True,
+	mandatory = True,
+        cfg = "host",
+     ),
+    "_cue": attr.label(
+        default = Label("//cue:cue_runtime"),
+        executable = True,
+        allow_single_file = True,
+        cfg = "host",
+    ),
+    "_vet_script": attr.label(
+        default = Label("//cue:scripts/vet.sh"),
+        executable = True,
+        allow_single_file = True,
+        cfg = "host",
+    ),
+    "_external_file_marker": attr.label(
+        allow_single_file = True,
+        # This just has to point to a source file in an external repo. It is
+        # only used by a local action, so it doesn't matter what it points
+        # to.
+        default = "@io_bazel_rules_go//:LICENSE.txt",
+    ),
+
+}
+
+
+# Inspired by rules_xcodeproj:
+#    https://github.com/buildbuddy-io/rules_xcodeproj/blob/603c1df6da0d3caab024eff996008b5d6509cc68/xcodeproj/internal/xcodeproj.bzl#L85-L129
+#
+# This will infer the execroot from the current running directory, and write
+# the path to a file.
+#
+# The installation script can then use the path written to swap in the real
+# execroot path.
+def _write_root_dir(ctx, external_file):
+    an_external_input = external_file #ctx.file._external_file_marker
+
+    output = ctx.actions.declare_file("{}_root_dirs".format(ctx.attr.name))
+    ctx.actions.run_shell(
+        inputs = [an_external_input],
+        outputs = [output],
+        command = """\
+# `readlink -f` doesn't exist on macOS, so use perl instead
+external_full_path="$(perl -MCwd -e 'print Cwd::abs_path shift' "{external_full}";)"
+# Strip `/private` prefix from paths (as it breaks breakpoints)
+external_full_path="${{external_full_path#/private}}"
+# Trim the suffix from the paths
+echo "${{external_full_path%/{external_full}}}" >> "{out_full}"
+""".format(
+            external_full = an_external_input.path,
+            out_full = output.path,
+        ),
+        mnemonic = "CalculateProjRootDirs",
+        # This has to run locally
+        execution_requirements = {
+            "local": "1",
+            "no-remote": "1",
+            "no-sandbox": "1",
+        },
+    )
+
+    return output
+
+def _cue_vet_test_impl(ctx):
+    # cue vet <data1> <data2> ... <schema>
+    external_file_marker = ctx.file._external_file_marker
+    root_dir_file = _write_root_dir(ctx, external_file_marker)
+    schema_zipfiles = [f for f in ctx.attr.schema[CuePkg].transitive_pkgs.to_list()]
+    schema_zipfile_paths = [f.short_path for f in schema_zipfiles]
+    rootmost_schema_zipfile_path = schema_zipfile_paths[-1]
+    space_separated_schema_zipfile_paths = " ".join(schema_zipfile_paths)
+    test_executable = ctx.actions.declare_file("vet-{}.sh".format(ctx.attr.name))
+    files_to_vet = [f for target in ctx.attr.data for f in target.files.to_list()]
+    files_to_vet_paths = [f.path for f in files_to_vet]
+    ctx.actions.expand_template(
+        output = test_executable,
+        template = ctx.file._vet_script,
+        is_executable = True,
+	substitutions = {
+            "%CUE_EXECUTABLE%": "{}".format(ctx.executable._cue.path),
+            "%SCHEMA_ZIPFILES%": space_separated_schema_zipfile_paths,
+            "%ROOTMOST_SCHEMA_ZIPFILE%": rootmost_schema_zipfile_path,
+            "%FILES_TO_VET%": " ".join(["'{}'".format(p) for p in files_to_vet_paths]),
+            "%ROOT_DIR_FILE%": root_dir_file.short_path,
+        }
+    )
+
+    runfiles = files_to_vet + schema_zipfiles + [ctx.executable._cue] + [root_dir_file]
+
+    return [
+        DefaultInfo(
+	    executable = test_executable,
+            runfiles = ctx.runfiles(files = runfiles),
+        ),
+    ]
+
+cue_vet_test = rule(
+    implementation = _cue_vet_test_impl,
+    attrs = _cue_vet_test_attrs,
+    test = True,
+)
+
 def _strip_extension(path):
     """Removes the final extension from a path."""
     components = path.split(".")
