@@ -38,7 +38,7 @@ CUE=$1; shift
 PKGZIP=$1; shift
 OUT=$1; shift
 
-unzip -q ${PKGZIP}
+unzip -qo ${PKGZIP}
 ${CUE} def -o ${OUT}
 """,
         inputs = [merged],
@@ -186,7 +186,7 @@ PKGZIP=$1; shift
 SRC=$1; shift
 OUT=$1; shift
 
-unzip -q ${PKGZIP}
+unzip -qo ${PKGZIP}
 ${CUE} export -o ${OUT} $@ ${SRC}
 """,
         inputs = [merged],
@@ -360,7 +360,7 @@ PKGZIP=$1; shift
 SCHEMA=$1; shift
 OUT=$1; shift
 
-unzip -q ${PKGZIP}
+unzip -qo ${PKGZIP}
 ${CUE} vet $@ "${SCHEMA}"
 touch $OUT
 """,
