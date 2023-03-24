@@ -185,7 +185,7 @@ _cue_runtimes = {
     ],
 }
 
-def cue_register_toolchains(version = "0.4.2"):
+def cue_register_toolchains(version = "0.4.3"):
     for platform in _cue_runtimes[version]:
         suffix = "tar.gz"
         if platform["os"] == "Windows":
