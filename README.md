@@ -54,6 +54,7 @@ dependencies (`cue_library` rules, see below).
 | `deps`          | List of dependencies for the `src`. Each dependency is a `cue_library`        |
 | `output_format` | It should be one of :value:`json` or :value:`yaml`.                           |
 | `output_name`   | Output file name, including extension. Defaults to `<src_name>.json`          |
+| `expression`    | expression to be evaluate in the cue file                                     |
 
 ### cue_library
 
