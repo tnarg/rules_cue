@@ -19,3 +19,10 @@ cue_export(
     visibility = ["//visibility:public"],
     deps = ["//examples/lang:cue_en_library"],
 )
+cue_export(
+    name = "expr",
+    src = "expr.cue",
+    expression ="hello",
+    visibility = ["//visibility:public"],
+    deps = ["//examples/lang:cue_en_library"],
+)
