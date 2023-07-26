@@ -159,6 +159,8 @@ def _cue_export(ctx, merged, output):
 
     if ctx.attr.escape:
         args.add("--escape")
+    if ctx.attr.expression:
+        args.add("--expression " + ctx.attr.expression)
 
     #if ctx.attr.ignore:
     #    args.add("--ignore")
@@ -278,6 +280,11 @@ _cue_export_attrs = {
     "escape": attr.bool(
         default = False,
         doc = "Use HTML escaping.",
+    ),
+    "expression": attr.string(
+        doc = "Expression to be targeted in export",
+        mandatory = False,
+        default = "",
     ),
     #debug            give detailed error info
     #ignore           proceed in the presence of errors
