@@ -1,5 +1,10 @@
 # CUE Rules for Bazel
 
+## Status
+
+While this repository is still in use it is essentially in maintenance mode. For a more featureful set of rules you might consider https://github.com/seh/rules_cue
+.
+
 ## Rules
 
 * [cue_export](#cue_export)

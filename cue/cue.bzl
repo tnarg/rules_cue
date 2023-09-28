@@ -1,5 +1,3 @@
-load("@io_bazel_rules_go//go/private:common.bzl", "env_execute")
-
 CuePkg = provider(
     doc = "Collects files from cue_library for use in downstream cue_export",
     fields = {
@@ -352,7 +350,7 @@ def _cue_repository_impl(ctx):
     existing_build_file = ""
     for name in build_file_names:
         path = ctx.path(name)
-        if path.exists and not env_execute(ctx, ["test", "-f", path]).return_code:
+        if path.exists and not ctx.execute(["test", "-f", path]).return_code:
             existing_build_file = name
             break
 
@@ -386,7 +384,7 @@ def _cue_repository_impl(ctx):
             cmd.extend(["-build_file_name", ctx.attr.build_file_name])
         cmd.extend(ctx.attr.build_extra_args)
         cmd.append(ctx.path(""))
-        result = env_execute(ctx, cmd, timeout = _CUE_REPOSITORY_TIMEOUT)
+        result = ctx.execute(cmd, timeout = _CUE_REPOSITORY_TIMEOUT)
         if result.return_code:
             fail("failed to generate BUILD files for %s: %s" % (
                 ctx.attr.importpath,
