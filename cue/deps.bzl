@@ -2,6 +2,44 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 
 _cue_runtimes = {
+    "0.6.0": [
+        {
+            "os": "linux",
+            "arch": "x86_64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.6.0/cue_v0.6.0_linux_amd64.tar.gz",
+            "sha256": "3ae7b28e12de2e0554c28d9a9eb3dd919f0640274c925ba0e36de9079af80de2",
+        },
+        {
+            "os": "linux",
+            "arch": "arm64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.6.0/cue_v0.6.0_linux_arm64.tar.gz",
+            "sha256": "57d9517b6af3e33e7614fa755dfb9ce14c3b05195aaa835fbe8e592db3cee203",
+        },
+        {
+            "os": "darwin",
+            "arch": "x86_64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.6.0/cue_v0.6.0_darwin_amd64.tar.gz",
+            "sha256": "960c8d863f18b1e78c7bc5eeb6e720fe20f47ee7311b935b0bbdeeb5430ab0b0",
+        },
+        {
+            "os": "darwin",
+            "arch": "arm64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.6.0/cue_v0.6.0_darwin_arm64.tar.gz",
+            "sha256": "e5af24a5017f3e60eb0d1647744239c5e53c6e521a311c85930eba18ff1bc87a",
+        },
+        {
+            "os": "windows",
+            "arch": "x86_64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.4.0/cue_v0.6.0_windows_amd64.zip",
+            "sha256": "69c32671349665ec4af9b8ab7a312e870b8318bf747041c0da2b8f505ce0e2e5",
+        },
+        {
+            "os": "windows",
+            "arch": "arm64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.4.0/cue_v0.6.0_windows_arm64.zip",
+            "sha256": "c8ba01b8914da74bedbca653846c0311dcc2ed07fdb83bebacc59ba0f72c3f7e",
+        },
+    ],
     "0.4.2": [
         {
             "os": "linux",
@@ -144,7 +182,7 @@ _cue_runtimes = {
             "arch": "x86_64",
             "sha256": "110b0a3b8210142fae362ec4c72481f0d63a0240edf88b4c14a3cb216271878a",
         },
-    ]
+    ],
 }
 
 def cue_register_toolchains(version = "0.4.2"):
@@ -162,4 +200,3 @@ def cue_register_toolchains(version = "0.4.2"):
             url = url,
             sha256 = platform["sha256"],
         )
-

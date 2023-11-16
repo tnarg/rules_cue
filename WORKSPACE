@@ -37,7 +37,7 @@ gazelle_dependencies()
 #
 load("//cue:deps.bzl", "cue_register_toolchains")
 
-cue_register_toolchains(version="0.4.2")
+cue_register_toolchains(version = "0.6.0")
 
 load("//:go.bzl", "go_modules")
 
