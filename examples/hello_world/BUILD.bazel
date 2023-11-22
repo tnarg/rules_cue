@@ -26,3 +26,9 @@ cue_export(
     expression = "hello",
     visibility = ["//visibility:public"],
 )
+
+cue_export(
+    name = "required",
+    src = "required.cue",
+    visibility = ["//visibility:public"],
+)

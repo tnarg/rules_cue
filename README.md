@@ -2,7 +2,7 @@
 
 ## Status
 
-While this repository is still in use it is essentially in maintenance mode. For a more featureful set of rules you might consider https://github.com/seh/rules_cue
+While this repository is still in use it is essentially in maintenance mode. For a more featureful set of rules you might consider <https://github.com/seh/rules_cue>
 .
 
 ## Rules
@@ -102,3 +102,5 @@ gazelle(
     gazelle = "//:gazelle_binary",
 )
 ```
+
+Run `bazel run //:gazelle -- update-repos -from_file=go.mod` to update repositories.

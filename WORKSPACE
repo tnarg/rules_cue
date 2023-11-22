@@ -24,7 +24,42 @@ http_archive(
 )
 
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
-load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
+
+go_repository(
+    name = "com_github_cockroachdb_apd_v3",
+    importpath = "github.com/cockroachdb/apd/v3",
+    sum = "h1:79kHCn4tO0VGu3W0WujYrMjBDk8a2H4KEUYcXf7whcg=",
+    version = "v3.2.0",
+)
+
+go_repository(
+    name = "com_github_go_quicktest_qt",
+    importpath = "github.com/go-quicktest/qt",
+    sum = "h1:I7iSLgIwNp0E0UnSvKJzs7ig0jg/Iq83zsZjtQNW7jY=",
+    version = "v1.100.0",
+)
+
+go_repository(
+    name = "com_github_google_shlex",
+    importpath = "github.com/google/shlex",
+    sum = "h1:El6M4kTTCOh6aBiKaUGG7oYTSPP8MxqL4YI3kZKwcP4=",
+    version = "v0.0.0-20191202100458-e7afc7fbc510",
+)
+
+go_repository(
+    name = "com_github_mitchellh_go_wordwrap",
+    importpath = "github.com/mitchellh/go-wordwrap",
+    sum = "h1:TLuKupo69TCn6TQSyGxwI1EblZZEsQ0vMlAFQflz0v0=",
+    version = "v1.0.1",
+)
+
+go_repository(
+    name = "com_github_tetratelabs_wazero",
+    importpath = "github.com/tetratelabs/wazero",
+    sum = "h1:lpwL5zczFHk2mxKur98035Gig+Z3vd9JURk6lUdZxXY=",
+    version = "v1.0.2",
+)
 
 go_rules_dependencies()
 
