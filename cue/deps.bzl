@@ -30,13 +30,13 @@ _cue_runtimes = {
         {
             "os": "windows",
             "arch": "x86_64",
-            "url": "https://github.com/cue-lang/cue/releases/download/v0.4.0/cue_v0.6.0_windows_amd64.zip",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.6.0/cue_v0.6.0_windows_amd64.zip",
             "sha256": "69c32671349665ec4af9b8ab7a312e870b8318bf747041c0da2b8f505ce0e2e5",
         },
         {
             "os": "windows",
             "arch": "arm64",
-            "url": "https://github.com/cue-lang/cue/releases/download/v0.4.0/cue_v0.6.0_windows_arm64.zip",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.6.0/cue_v0.6.0_windows_arm64.zip",
             "sha256": "c8ba01b8914da74bedbca653846c0311dcc2ed07fdb83bebacc59ba0f72c3f7e",
         },
     ],
