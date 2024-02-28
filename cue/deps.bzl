@@ -1,6 +1,44 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 _cue_runtimes = {
+    "0.7.1": [
+        {
+            "os": "darwin",
+            "arch": "x86_64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.7.1/cue_v0.7.1_darwin_amd64.tar.gz",
+            "sha256": "8bc701670dfd72d009239605c45973dfd95b7bdaaf55b5eb923c1909058b09e4",
+        },
+        {
+            "os": "darwin",
+            "arch": "arm64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.7.1/cue_v0.7.1_darwin_arm64.tar.gz",
+            "sha256": "a163cc7c33adeeb6c3799c9ec20b8c6a36ffe267453301eaef996f717178ac08",
+        },
+        {
+            "os": "linux",
+            "arch": "x86_64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.7.1/cue_v0.7.1_linux_amd64.tar.gz",
+            "sha256": "dbd548ff02567881cf81834d0e9e035c86a287c887587b9abfd119763ebb9aea",
+        },
+        {
+            "os": "linux",
+            "arch": "arm64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.7.1/cue_v0.7.1_linux_arm64.tar.gz",
+            "sha256": "6be1cf9ab36baa62466056bbbc1c3ffe259522fd0c35ea196ad10463eab29f75",
+        },
+        {
+            "os": "windows",
+            "arch": "x86_64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.7.1/cue_v0.7.1_windows_amd64.zip",
+            "sha256": "54d2a7f64985bb5f4bdbff8796ee9f290ba7c86ba1d8b98822373d01ebfae19a",
+        },
+        {
+            "os": "windows",
+            "arch": "arm64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.7.1/cue_v0.7.1_windows_arm64.zip",
+            "sha256": "4583fc57b6e90da51f2397d0c9e65912d18a4dc4a6c946ea4347af91bd9c7f38",
+        },
+    ],
     "0.7.0": [
         {
             "os": "linux",

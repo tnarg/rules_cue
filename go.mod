@@ -1,18 +1,20 @@
 module github.com/tnarg/rules_cue
 
-go 1.21
+go 1.21.4
+
+toolchain go1.22.0
 
 require (
-	cuelang.org/go v0.6.0 // indirect
-	github.com/cockroachdb/apd v1.1.0 // indirect
-	github.com/cockroachdb/apd/v2 v2.0.2 // indirect
-	github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334 // indirect
-	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/pkg/errors v0.8.1 // indirect
-	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
-	github.com/spf13/viper v1.4.0 // indirect
-	golang.org/x/exp v0.0.0-20210126221216-84987778548c // indirect
-	gopkg.in/errgo.v2 v2.1.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
-	rsc.io/zipmerge v0.0.0-20160407035457-24e6c1052c64 // indirect
+	cuelang.org/go v0.7.1
+	github.com/bazelbuild/bazel-gazelle v0.35.0
+	github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334
+)
+
+require (
+	github.com/bazelbuild/buildtools v0.0.0-20231115204819-d4c9dccdfbb1 // indirect
+	github.com/cockroachdb/apd/v3 v3.2.1 // indirect
+	github.com/mpvl/unique v0.0.0-20150818121801-cbe035fff7de // indirect
+	golang.org/x/mod v0.14.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/tools/go/vcs v0.1.0-deprecated // indirect
 )
