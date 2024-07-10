@@ -1,6 +1,44 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 _cue_runtimes = {
+    "0.9.2": [
+        {
+            "os": "darwin",
+            "arch": "x86_64",
+            "url": "https://github.com/cue-lang/cue/releases/download/0.9.2/cue_v0.9.2_darwin_amd64.tar.gz",
+            "sha256": "87ebebb8459d579ff791843b3228ca64dc372181456d8e2b4ad4e3f0c607c94d",
+        },
+        {
+            "os": "darwin",
+            "arch": "arm64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.9.2/cue_v0.9.2_darwin_arm64.tar.gz",
+            "sha256": "0f01909937c7f1b5b58d55e53a7d5366f3b4f8fc48dc31e391dd55340ea1ae95",
+        },
+        {
+            "os": "linux",
+            "arch": "x86_64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.9.2/cue_v0.9.2_linux_amd64.tar.gz",
+            "sha256": "67c88f6c3bdf884301794c3ec91f9e6e3f660e7de3b7e10cd29fbbd291baac50",
+        },
+        {
+            "os": "linux",
+            "arch": "arm64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.9.2/cue_v0.9.2_linux_arm64.tar.gz",
+            "sha256": "3b90c49faaf3367338bd95db0bf76ec86bf4ca7d175d42a221e27bdc8d265256",
+        },
+        {
+            "os": "windows",
+            "arch": "x86_64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.9.2/cue_v0.9.2_windows_amd64.zip",
+            "sha256": "b63616df5dcc13dc968e714d4935d2823600aa5bdda049edbcaeb639c91a1c76",
+        },
+        {
+            "os": "windows",
+            "arch": "arm64",
+            "url": "https://github.com/cue-lang/cue/releases/download/v0.7.1/cue_v0.7.1_windows_arm64.zip",
+            "sha256": "30fb3b62889f45da8c79a75c4c8772ea47306e5edca5c921c7ffb9095522ae1c",
+        },
+    ],
     "0.7.1": [
         {
             "os": "darwin",
@@ -260,7 +298,7 @@ _cue_runtimes = {
     ],
 }
 
-def cue_register_toolchains(version = "0.7.0"):
+def cue_register_toolchains(version = "0.9.2"):
     for platform in _cue_runtimes[version]:
         suffix = "tar.gz"
         if platform["os"] == "Windows":
